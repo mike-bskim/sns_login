@@ -5,11 +5,9 @@ import 'package:get/get.dart';
 import 'package:sns_login/src/model/login_user.dart';
 
 class LoginUserController extends GetxController {
-//  final AsyncSnapshot snapshot;
-//  LoginUserController(this.snapshot);
 
   static LoginUserController get to => Get.find();
-  Rx<LoginUser> _curUser = LoginUser().obs;
+  final Rx<LoginUser> _curUser = LoginUser().obs;
 
   @override
   void onInit() {
@@ -26,10 +24,10 @@ class LoginUserController extends GetxController {
     var result = await getUserInfo(snapshot.data.uid);
     if (result > 0){
       print('old customer');
-//      curUser.addAll(result.data());
     } else {
       print('new customer');
       _initUserInfo(snapshot);
+      await getUserInfo(snapshot.data.uid);
     }
   }
 
@@ -41,38 +39,36 @@ class LoginUserController extends GetxController {
   }
 
   Future getUserInfo(String uid) async {
-    var result = await FirebaseFirestore.instance
-        .collection('user_info')
-//        .doc(uid) // .doc(widget.user.uid)
-        .get();
-
-    final userList = result.docs.map((user) {
-      return LoginUser.fromJson(user);
-    }).where((user) {
-      return (user.uid == uid);
-    }).toList();
-
-    if (userList.isNotEmpty) {
-      _curUser(userList.first);
-//      print(userList.length);
-//      print(curUser.photoURL);
-    }
-
-    return userList.length.toInt();
-
-
 //    var result = await FirebaseFirestore.instance
 //        .collection('user_info')
-//        .doc(uid) // .doc(widget.user.uid)
 //        .get();
 //
-//    if (result.exists) {
-////      print('getUserInfo: ' + result.data().toString());
-//      return result;
-//    } else {
-//      print('else >>>>> no data ');
-//      return Future.value(null);
+//    final userList = result.docs.map((user) {
+//      return LoginUser.fromJson(user);
+//    }).where((user) {
+//      return (user.uid == uid);
+//    }).toList();
+//
+//    if (userList.isNotEmpty) {
+//      _curUser(userList.first);
 //    }
+//
+//    return userList.length.toInt();
+
+    var result = await FirebaseFirestore.instance
+        .collection('user_info')
+        .doc(uid)
+        .get();
+
+    if(result.exists) {
+      final userList = LoginUser.fromJson2(result);
+      _curUser(userList);
+      print('>>>>' + curUser.email.toString());
+      return 1;
+    }
+    print('>>>>' + curUser.email.toString());
+    return 0;
+
   }
 
   Future _initUserInfo(AsyncSnapshot snapshot) async {
@@ -83,21 +79,23 @@ class LoginUserController extends GetxController {
     var _date = DateTime.now();
     var _nextMonth = DateTime(_date.year, _date.month+1, _date.day).toString().split(' ');
 
-    await _userInfo.set(LoginUser(
-      datetime: _date.toString(),
-      email: snapshot.data.email,
-      expDate: _nextMonth[0],
-      uid: snapshot.data.uid,
-      language: '',
-      photoURL: snapshot.data.photoURL,
-      providerId: snapshot.data.providerData[0].providerId,
-      sUid: snapshot.data.providerData[0].uid,
-      userType: '',
-      validation: false,
-      appVersion: '',
-      lastLogin: '',
-      loginCnt: 0,
-    ).initToMap()
+    await _userInfo.set(
+      LoginUser(
+        datetime: _date.toString(),
+        displayName: snapshot.data.displayName,
+        email: snapshot.data.email,
+        expDate: _nextMonth[0],
+        uid: snapshot.data.uid,
+        language: '',
+        photoURL: snapshot.data.photoURL,
+        providerId: snapshot.data.providerData[0].providerId,
+        sUid: snapshot.data.providerData[0].uid,
+        userType: '',
+        validation: false,
+        appVersion: '',
+        lastLogin: '',
+        loginCnt: 0,
+      ).initToMap()
     ).then((onValue) {
     });
   }

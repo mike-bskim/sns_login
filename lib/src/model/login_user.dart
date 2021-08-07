@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class LoginUser {
   final String? appVersion;
   final String? datetime;
+  final String? displayName;
   final String? email;
   final String? expDate;
   final String? uid;
@@ -19,6 +20,7 @@ class LoginUser {
       {
         this.appVersion,
         this.datetime,
+        this.displayName,
         this.email,
         this.expDate,
         this.uid,
@@ -33,10 +35,12 @@ class LoginUser {
       }
   );
 
+  // 1. StreamBuilder 또는 FutureBuilder 사용하는 경우
   factory LoginUser.fromDoc(QueryDocumentSnapshot data) {
     Map<String, dynamic> info = data.data() as Map<String, dynamic>;
     return LoginUser(
       datetime: info['datetime'],
+      displayName: info['displayName'],
       email: info['email'],
       expDate: info['expDate'],
       uid: info['uid'],
@@ -52,10 +56,30 @@ class LoginUser {
     );
   }
 
-
+  // 2. _JsonQueryDocumentSnapshot 또는 일반적인 json 타입인 경우
   factory LoginUser.fromJson(QueryDocumentSnapshot<Map<String, dynamic>> json) {
     return LoginUser(
       datetime: json['datetime'],
+      displayName: json['displayName'],
+      email: json['email'],
+      expDate: json['expDate'],
+      uid: json['uid'],
+      language: json['language'],
+      photoURL: json['photoURL'],
+      providerId: json['providerId'],
+      sUid: json['sUid'],
+      userType: json['userType'],
+      validation: json['validation'],
+      appVersion: json['appVersion'],
+      lastLogin: json['lastLogin'],
+      loginCnt: json['loginCnt'],
+    );
+  }
+
+  factory LoginUser.fromJson2(DocumentSnapshot<Map<String, dynamic>> json) {
+    return LoginUser(
+      datetime: json['datetime'],
+      displayName: json['displayName'],
       email: json['email'],
       expDate: json['expDate'],
       uid: json['uid'],
@@ -78,9 +102,11 @@ class LoginUser {
       'loginCnt': loginCnt,
     };
   }
+
   Map<String, dynamic> initToMap() {
     return {
       'datetime': datetime,
+      'displayName': displayName,
       'email': email,
       'expDate': expDate,
       'uid': uid,
@@ -95,7 +121,5 @@ class LoginUser {
       'loginCnt': loginCnt,
     };
   }
-
-
 
 }
