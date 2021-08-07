@@ -9,7 +9,7 @@ class LoginUserController extends GetxController {
 //  LoginUserController(this.snapshot);
 
   static LoginUserController get to => Get.find();
-  RxMap curUser = {}.obs;
+  Rx<LoginUser> _curUser = LoginUser().obs;
 
   @override
   void onInit() {
@@ -24,16 +24,16 @@ class LoginUserController extends GetxController {
   void mappingUserInfo(AsyncSnapshot snapshot) async {
 
     var result = await getUserInfo(snapshot.data.uid);
-    if (result != null){
+    if (result > 0){
       print('old customer');
-      curUser.addAll(result.data());
+//      curUser.addAll(result.data());
     } else {
       print('new customer');
       _initUserInfo(snapshot);
     }
   }
 
-//  List get curUser => _curUser;
+  LoginUser get curUser => _curUser.value;
 
   void mappingUserType({required String userType, required String userLangType}) {
 //    _curUser['userType'] = userType;
@@ -41,19 +41,38 @@ class LoginUserController extends GetxController {
   }
 
   Future getUserInfo(String uid) async {
-
     var result = await FirebaseFirestore.instance
         .collection('user_info')
-        .doc(uid) // .doc(widget.user.uid)
+//        .doc(uid) // .doc(widget.user.uid)
         .get();
 
-    if (result.exists) {
-//      print('getUserInfo: ' + result.data().toString());
-      return result;
-    } else {
-      print('else >>>>> no data ');
-      return Future.value(null);
+    final userList = result.docs.map((user) {
+      return LoginUser.fromJson(user);
+    }).where((user) {
+      return (user.uid == uid);
+    }).toList();
+
+    if (userList.isNotEmpty) {
+      _curUser(userList.first);
+//      print(userList.length);
+//      print(curUser.photoURL);
     }
+
+    return userList.length.toInt();
+
+
+//    var result = await FirebaseFirestore.instance
+//        .collection('user_info')
+//        .doc(uid) // .doc(widget.user.uid)
+//        .get();
+//
+//    if (result.exists) {
+////      print('getUserInfo: ' + result.data().toString());
+//      return result;
+//    } else {
+//      print('else >>>>> no data ');
+//      return Future.value(null);
+//    }
   }
 
   Future _initUserInfo(AsyncSnapshot snapshot) async {

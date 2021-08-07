@@ -27,31 +27,34 @@ class App extends StatelessWidget {
             _loginUserCtrl.mappingUserInfo(snapshot);
 
             return Scaffold(
-              appBar: AppBar(
-                title: Text('Login'),
-                centerTitle: true,
-                actions: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.exit_to_app, color: Colors.white,),
-                      onPressed: () {
-                        FirebaseAuth.instance.signOut();
-                        _googleSignIn.signOut();
-                        FacebookAuth.instance.logOut();
-                      })
-                ],
-              ),
-              body: Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('provider ID: ' + snapshot.data.providerData[0].providerId,
-                    style: TextStyle(fontSize: 20),),
-                  SizedBox( height: 20, ),
-                  Text('User UID: ' + snapshot.data.uid,
-                    style: TextStyle(fontSize: 18),),
-                ],
-              )),
-            );
+                appBar: AppBar(
+                  title: Text('Login'),
+                  centerTitle: true,
+                  actions: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.exit_to_app, color: Colors.white,),
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut();
+                          _googleSignIn.signOut();
+                          FacebookAuth.instance.logOut();
+                        })
+                  ],
+                ),
+                body: Center(
+                  child: Obx(() =>
+                  _loginUserCtrl.curUser.providerId != null
+                  ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('provider ID: ${_loginUserCtrl.curUser.providerId}',
+                        style: TextStyle(fontSize: 20),),
+                      SizedBox(height: 20,),
+                      Text('User UID: ${_loginUserCtrl.curUser.uid}', //snapshot.data.uid,
+                        style: TextStyle(fontSize: 18),),
+                    ],
+                  )
+                  : Center(child: CircularProgressIndicator()) ),
+                ));
           }
           return LoginPage();
         }

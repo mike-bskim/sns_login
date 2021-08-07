@@ -53,7 +53,7 @@ class LoginUser {
   }
 
 
-  factory LoginUser.fromJson(Map<String, dynamic> json) {
+  factory LoginUser.fromJson(QueryDocumentSnapshot<Map<String, dynamic>> json) {
     return LoginUser(
       datetime: json['datetime'],
       email: json['email'],
