@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sns_login/src/controller/tab_page_controller.dart';
+import 'package:sns_login/src/pages/home_page.dart';
 
 
 class TabPage extends StatefulWidget { // StatefulWidget
@@ -20,7 +21,8 @@ class _TabPageState extends State<TabPage> {
     // TODO: implement initState
     super.initState();
     _pages = [
-      Text('Home Page'),
+//      Text('Home Page'),
+      HomePage(),
       Text('Study Page'),
       Text('Manage Page'),
       Text('Test Page'),
