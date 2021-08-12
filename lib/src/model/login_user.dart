@@ -10,7 +10,7 @@ class LoginUser {
   final String? language;
   final String? lastLogin;
   final int? loginCnt;
-  final String? photoURL;
+  String? photoURL;
   final String? providerId;
   final String? sUid;
   final String? userType;
@@ -95,7 +95,7 @@ class LoginUser {
     );
   }
 
-  Map<String, dynamic> loginToMap() {
+  Map<String, dynamic> loginLogToMap() {
     return {
       'appVersion': appVersion,
       'lastLogin': lastLogin,
@@ -119,6 +119,15 @@ class LoginUser {
       'appVersion': appVersion,
       'lastLogin': lastLogin,
       'loginCnt': loginCnt,
+    };
+  }
+
+  Map<String, dynamic> profileToMap() {
+    return {
+      'displayName': displayName,
+      'language': language,
+      'photoURL': photoURL,
+      'userType': userType,
     };
   }
 

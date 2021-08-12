@@ -7,23 +7,32 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sns_login/src/controller/login_user_controller.dart';
 
 class LoginPage extends StatelessWidget {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FacebookAuth _facebookSignIn = FacebookAuth.instance;
+  final LoginUserController _loginUserCtrl = Get.put(LoginUserController());
 
   @override
   Widget build(BuildContext context) {
 
-    var _mobile = false;
-    var _isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-    var _isAOS = Theme.of(context).platform == TargetPlatform.android;
-    if(_isAOS || _isIOS) {
-      _mobile = true;
+//    var _isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+//    var _isAOS = Theme.of(context).platform == TargetPlatform.android;
+//    if(_isAOS || _isIOS) {
+//      _mobile = true;
+//    }
+
+    if (kIsWeb) {
+      // running on the web!
+      _loginUserCtrl.changeIsMobile(false);
+    } else {
+      // NOT running on the web! You can check for additional platforms here.
+      _loginUserCtrl.changeIsMobile(true);
     }
-    print('isMobile: : ' + _mobile.toString());
+    print('isMobile: : ' + _loginUserCtrl.isMobile.toString());
 
     return Scaffold(
       body: Center(
@@ -90,7 +99,7 @@ class LoginPage extends StatelessWidget {
               SignInButton(
                 Buttons.GoogleDark,
                 onPressed: () {
-                  _mobile
+                  _loginUserCtrl.isMobile
                   ? _handleSignIn().then((user) { print('Google(AOS): login'); })
                   : signInWithGoogleWeb().then((user) { print('Google(Web): login'); });
                 },
@@ -101,7 +110,7 @@ class LoginPage extends StatelessWidget {
               SignInButton(
                 Buttons.Facebook,
                 onPressed: () {
-                  _mobile
+                  _loginUserCtrl.isMobile
                   ? signInWithFacebook().then((user) {
                     print('Facebook: login'); })
                   : signInWithFacebookWeb().then((user) {
@@ -132,6 +141,10 @@ class LoginPage extends StatelessWidget {
 //                  print('return result: ' + result.toString());
                 },
               ),
+              SizedBox(
+                height: 10,
+              ),
+              _loginUserCtrl.isMobile ? Text('Mobile') : Text('Web')
             ],
           ),
         ),

@@ -55,6 +55,16 @@
     firebase.analytics();
   </script>
 
+  <!-- NetworkImage 함수 오류 해결 -->
+  <script type="text/javascript">
+    let useHtml = true;
+    if(useHtml) {
+      window.flutterWebRenderer = "html";
+    } else {
+      window.flutterWebRenderer = "canvaskit";
+    }
+  </script>
+
   <!-- 아래 부분은 기본 설정부분(flutter 프로젝트 생성시 자동 생성)-->
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
