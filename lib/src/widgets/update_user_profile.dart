@@ -1,5 +1,5 @@
 import 'dart:io';
-//import 'dart:typed_data';
+import 'package:crop_your_image/crop_your_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +10,6 @@ import 'package:sns_login/src/controller/login_user_controller.dart';
 import 'package:sns_login/src/widgets/common_component.dart';
 import 'package:sns_login/src/widgets/input_decoration.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
-//import 'package:firebase/firebase.dart' as fb;
-//import 'package:image_picker_web/image_picker_web.dart';
-//import 'package:mime_type/mime_type.dart';
-//import 'package:path/path.dart';
 
 
 class UpdateUserProfile extends StatelessWidget {
@@ -30,7 +25,6 @@ class UpdateUserProfile extends StatelessWidget {
   final DropdownButtonController _dropdownButtonCtrl = Get.put(DropdownButtonController());
 //  final GoogleSignIn _googleSignIn = GoogleSignIn();
   XFile? _image;
-  var _memoryImage;
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +65,7 @@ class UpdateUserProfile extends StatelessWidget {
                     ? NetworkImage(_loginUserCtrl.newPhotoURL)
                     : _loginUserCtrl.isMobile
                       ? FileImage(File(_loginUserCtrl.newPhotoURL)) as ImageProvider
-                      : MemoryImage(_memoryImage),
-//              : NetworkImage(_loginUserCtrl.newPhotoURL),
+                      : NetworkImage(_loginUserCtrl.newPhotoURL),
                     radius: 45,
                   )),
                   Container(
@@ -89,7 +82,8 @@ class UpdateUserProfile extends StatelessWidget {
                           if (_loginUserCtrl.isMobile == true) {
                             _getImage();
                           } else {
-                            imagePickerWeb();
+                            _getImage();
+//                            imagePickerWeb();
                           }
                         },
                         backgroundColor: Colors.white,
@@ -168,7 +162,6 @@ class UpdateUserProfile extends StatelessWidget {
       maxHeight: 800,
     );
 
-    var readAsBytes = image!.readAsBytes();
     if (image != null) {
 //      await _cropImage(image);
       _image = image;
@@ -179,6 +172,28 @@ class UpdateUserProfile extends StatelessWidget {
     _loginUserCtrl.changeNewPhotoURL(_image!.path);
 
   }
+
+//  final _cropCtrl = CropController();
+//  Widget build(BuildContext context) {
+//    return Crop(
+//        image: _imageData,
+//        controller: _controller,
+//        onCropped: (image) {
+//          // do something with image data
+//        },
+//        aspectRatio: 4 / 3,
+//        initialSize: 0.5,
+//        // initialArea: Rect.fromLTWH(240, 212, 800, 600),
+//        // withCircleUi: true,
+//        baseColor: Colors.blue.shade900,
+//        maskColor: Colors.white.withAlpha(100),
+//        onMoved: (newRect) {
+//          // do something with current cropping area.
+//        }
+//        cornerDotBuilder: (size, cornerIndex) => const DotControl(color: Colors.blue),
+//    );
+//  }
+
 
   Future _uploadImage() async {
 
@@ -195,12 +210,22 @@ class UpdateUserProfile extends StatelessWidget {
     print('_uploadImage0');
     final firebaseStorageRef = FirebaseStorage.instance;
 
-    var task = await firebaseStorageRef
-        .ref() // 시작점
-        .child(_loginUserCtrl.curUser.uid!) // 경로, post
-        .child('user_info') // 경로
-        .child(_picName)
-        .putFile(File(_image!.path)); // ^7.0.0
+    var task;
+    if(_loginUserCtrl.isMobile) {
+      task = await firebaseStorageRef
+          .ref() // 시작점
+          .child(_loginUserCtrl.curUser.uid!) // 경로, post
+          .child('user_info') // 경로
+          .child(_picName)
+          .putFile(File(_image!.path)); // ^7.0.0
+    } else {
+      task = await firebaseStorageRef
+          .ref() // 시작점
+          .child(_loginUserCtrl.curUser.uid!) // 경로, post
+          .child('user_info') // 경로
+          .child(_picName)
+          .putData(await _image!.readAsBytes());
+    }
 
     // 업로드 완료되면 데이터의 주소를 얻을수 있음, future object
     var downloadUrl = await task.ref.getDownloadURL();
