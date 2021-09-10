@@ -164,7 +164,7 @@ class LoginPage extends StatelessWidget {
 
     final authResult = await _auth.signInWithCredential(credential);
     final user = authResult.user;
-//    print(user);
+//    print('google mobile user: ' + user.toString());
 
     return user;
   }
