@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:crop_your_image/crop_your_image.dart';
+//import 'package:crop_your_image/crop_your_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sns_login/src/controller/dropdown_button_controller.dart';
 import 'package:sns_login/src/controller/login_user_controller.dart';
+import 'package:sns_login/src/pages/image_crop.dart';
 import 'package:sns_login/src/widgets/common_component.dart';
 import 'package:sns_login/src/widgets/input_decoration.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -155,6 +156,7 @@ class UpdateUserProfile extends StatelessWidget {
   }
 
 
+//  final _cropCtrl = CropController();
   Future _getImage() async {
     final image = await ImagePicker().pickImage(
       //PickedFile ==> final
@@ -164,16 +166,21 @@ class UpdateUserProfile extends StatelessWidget {
 
     if (image != null) {
 //      await _cropImage(image);
+
       _image = image;
+      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
+      print('result1 >>> ');
+      print(result1);
     } else {
       print('No image selected.');
     }
+
+
     print('_getImage >> _image!.path: ' + _image!.path.toString());
     _loginUserCtrl.changeNewPhotoURL(_image!.path);
 
   }
 
-//  final _cropCtrl = CropController();
 //  Widget build(BuildContext context) {
 //    return Crop(
 //        image: _imageData,

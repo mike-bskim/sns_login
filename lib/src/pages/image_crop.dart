@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:crop/crop.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 //import 'package:image_picker/image_picker.dart';
 
 class ImageCrop extends StatefulWidget {
@@ -36,30 +37,38 @@ class _ImageCropState extends State<ImageCrop> {
     final pixelRatio = MediaQuery.of(context).devicePixelRatio;
     final cropped = await controller.crop(pixelRatio: pixelRatio);
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: const Text('Crop Result'),
-            centerTitle: true,
-            actions: [
-              Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.save),
-                  onPressed: () {},
-                ),
-              ),
-            ],
-          ),
-          body: Center(
-            child: RawImage(
-              image: cropped,
-            ),
-          ),
-        ),
-        fullscreenDialog: true,
-      ),
-    );
+    print('_cropImage>>>');
+    print(cropped);
+    Get.back( result: cropped.toByteData());
+
+//    Navigator.of(context).push(
+//      MaterialPageRoute(
+//        builder: (context) => Scaffold(
+//          appBar: AppBar(
+//            title: const Text('Crop Result'),
+//            centerTitle: true,
+//            actions: [
+//              Builder(
+//                builder: (context) => IconButton(
+//                  icon: const Icon(Icons.save),
+//                  onPressed: () {
+//                    print('_cropImage>>>');
+//                    print(cropped);
+//                    Get.back( result: cropped);
+//                  },
+//                ),
+//              ),
+//            ],
+//          ),
+//          body: Center(
+//            child: RawImage(
+//              image: cropped,
+//            ),
+//          ),
+//        ),
+//        fullscreenDialog: true,
+//      ),
+//    );
   }
 
   @override
@@ -70,9 +79,10 @@ class _ImageCropState extends State<ImageCrop> {
         title: const Text('Crop Demo'),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.edit),
+          icon: const Icon(Icons.close),
           onPressed: () {
             print('나중에 지울것');
+            Get.back();
           },
         ),
         actions: <Widget>[
@@ -128,6 +138,7 @@ class _ImageCropState extends State<ImageCrop> {
             ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               IconButton(
                 icon: const Icon(Icons.undo),
@@ -187,7 +198,7 @@ class _ImageCropState extends State<ImageCrop> {
                     child: Text("Original"),
                     value: 1000 / 667.0,
                   ),
-                  const PopupMenuDivider(),
+//                  const PopupMenuDivider(),
                   const PopupMenuItem(
                     child: Text("16:9"),
                     value: 16.0 / 9.0,
