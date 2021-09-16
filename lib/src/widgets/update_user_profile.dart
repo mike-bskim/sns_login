@@ -1,18 +1,19 @@
 import 'dart:io';
-//import 'package:crop_your_image/crop_your_image.dart';
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sns_login/src/controller/dropdown_button_controller.dart';
 import 'package:sns_login/src/controller/login_user_controller.dart';
-import 'package:sns_login/src/pages/image_crop.dart';
 import 'package:sns_login/src/widgets/common_component.dart';
 import 'package:sns_login/src/widgets/input_decoration.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 
+// ignore: must_be_immutable
 class UpdateUserProfile extends StatelessWidget {
   UpdateUserProfile({
     Key? key,
@@ -26,6 +27,7 @@ class UpdateUserProfile extends StatelessWidget {
   final DropdownButtonController _dropdownButtonCtrl = Get.put(DropdownButtonController());
 //  final GoogleSignIn _googleSignIn = GoogleSignIn();
   XFile? _image;
+  var newImagePath = '';
 
   @override
   Widget build(BuildContext context) {
@@ -165,42 +167,55 @@ class UpdateUserProfile extends StatelessWidget {
     );
 
     if (image != null) {
-//      await _cropImage(image);
-
       _image = image;
-      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
-      print('result1 >>> ');
-      print(result1);
+      print('ImagePicker >> before crop: ' + image.path.toString());
+      newImagePath = await _cropImage(image);
+      print('ImagePicker >> after crop: ' + newImagePath);
+//      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
     } else {
       print('No image selected.');
     }
-
-
     print('_getImage >> _image!.path: ' + _image!.path.toString());
-    _loginUserCtrl.changeNewPhotoURL(_image!.path);
+    print('_getImage >> newImagePath: ' + newImagePath);
+//    _loginUserCtrl.changeNewPhotoURL(_image!.path);
+    _loginUserCtrl.changeNewPhotoURL(newImagePath);
 
   }
 
-//  Widget build(BuildContext context) {
-//    return Crop(
-//        image: _imageData,
-//        controller: _controller,
-//        onCropped: (image) {
-//          // do something with image data
-//        },
-//        aspectRatio: 4 / 3,
-//        initialSize: 0.5,
-//        // initialArea: Rect.fromLTWH(240, 212, 800, 600),
-//        // withCircleUi: true,
-//        baseColor: Colors.blue.shade900,
-//        maskColor: Colors.white.withAlpha(100),
-//        onMoved: (newRect) {
-//          // do something with current cropping area.
-//        }
-//        cornerDotBuilder: (size, cornerIndex) => const DotControl(color: Colors.blue),
-//    );
-//  }
 
+// D:\workspace\Flutter\flutter_firebase\android\app\src\main\AndroidManifest.xml
+/*
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+*/
+  Future _cropImage(XFile? picked) async {
+    var cropped = await ImageCropper.cropImage(
+      androidUiSettings: AndroidUiSettings(
+        statusBarColor: Colors.red,
+        toolbarColor: Colors.red,
+        toolbarTitle: "Crop Image",
+        toolbarWidgetColor: Colors.white,
+//        lockAspectRatio: false,// no use
+      ),
+      sourcePath: picked!.path,
+      aspectRatioPresets: [
+//        CropAspectRatioPreset.original,// no use
+//        CropAspectRatioPreset.square,// no use
+//        CropAspectRatioPreset.ratio16x9,// no use
+        CropAspectRatioPreset.ratio4x3,
+      ],
+      maxWidth: 600,
+    );
+    if (cropped != null) {
+//      _image = XFile.fromData(File(cropped.path).readAsBytesSync());
+      print('cropped >>> ' + cropped.path.toString());
+      return cropped.path;
+//      setState(() {
+//      });
+    }
+  }
 
   Future _uploadImage() async {
 
@@ -224,7 +239,7 @@ class UpdateUserProfile extends StatelessWidget {
           .child(_loginUserCtrl.curUser.uid!) // 경로, post
           .child('user_info') // 경로
           .child(_picName)
-          .putFile(File(_image!.path)); // ^7.0.0
+          .putFile(File(newImagePath)); // ^7.0.0
     } else {
       task = await firebaseStorageRef
           .ref() // 시작점
