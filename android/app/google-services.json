@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "766669128086",
+    "project_id": "honge-sns-login",
+    "storage_bucket": "honge-sns-login.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766669128086:android:ede783b47ef134442fddb7",
+        "android_client_info": {
+          "package_name": "com.honge.sns_login"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766669128086-n3ip5334qrd4mdm1j7ih57vohhcglv3m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.honge.sns_login",
+            "certificate_hash": "583de3b7ba3eb5568632771876f44e92f6403972"
+          }
+        },
+        {
+          "client_id": "766669128086-41r0qbnrp60p0jac399dru4dcvrht2gi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVLo5f5Xk7jVg65HXVNhVfDeu2yR5TmdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766669128086-41r0qbnrp60p0jac399dru4dcvrht2gi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
