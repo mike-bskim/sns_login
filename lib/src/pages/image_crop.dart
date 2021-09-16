@@ -1,11 +1,7 @@
-//import 'dart:io';
-
 import 'dart:io';
-
 import 'package:crop/crop.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-//import 'package:image_picker/image_picker.dart';
 
 class ImageCrop extends StatefulWidget {
 
@@ -37,9 +33,9 @@ class _ImageCropState extends State<ImageCrop> {
     final pixelRatio = MediaQuery.of(context).devicePixelRatio;
     final cropped = await controller.crop(pixelRatio: pixelRatio);
 
-    print('_cropImage>>>');
+    print('ImageCrop >> _cropImage>>>');
     print(cropped);
-    Get.back( result: cropped.toByteData());
+    Get.back( result: cropped);
 
 //    Navigator.of(context).push(
 //      MaterialPageRoute(
