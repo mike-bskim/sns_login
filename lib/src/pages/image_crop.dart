@@ -35,7 +35,7 @@ class _ImageCropState extends State<ImageCrop> {
 
     print('ImageCrop >> _cropImage>>>');
     print(cropped);
-    Get.back( result: cropped);
+//    Get.back( result: cropped);
 
 //    Navigator.of(context).push(
 //      MaterialPageRoute(

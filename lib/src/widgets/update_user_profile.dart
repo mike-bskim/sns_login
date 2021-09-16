@@ -8,6 +8,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sns_login/src/controller/dropdown_button_controller.dart';
 import 'package:sns_login/src/controller/login_user_controller.dart';
+import 'package:sns_login/src/pages/image_crop.dart';
 import 'package:sns_login/src/widgets/common_component.dart';
 import 'package:sns_login/src/widgets/input_decoration.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -168,11 +169,11 @@ class UpdateUserProfile extends StatelessWidget {
 
     if (image != null) {
       _image = image;
-      print('ImagePicker >> before crop: ' + image.path.toString());
-      newImagePath = await _cropImage(image);
-      print('ImagePicker >> after crop: ' + newImagePath);
+//      print('ImagePicker >> before crop: ' + image.path.toString());
+//      newImagePath = await _cropImage(image);
+//      print('ImagePicker >> after crop: ' + newImagePath);
 
-//      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
+      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
     } else {
       print('No image selected.');
     }
