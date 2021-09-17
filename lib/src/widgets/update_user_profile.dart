@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -168,25 +167,21 @@ class UpdateUserProfile extends StatelessWidget {
 
     if (image != null) {
       _image = image;
-<<<<<<< HEAD
-//      print('ImagePicker >> before crop: ' + image.path.toString());
-//      newImagePath = await _cropImage(image);
-//      print('ImagePicker >> after crop: ' + newImagePath);
+      if(_loginUserCtrl.isMobile) {
+        newImagePath = await _cropImage(image);
+      }
 
-      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
-=======
-      print('ImagePicker >> before crop: ' + image.path.toString());
-      newImagePath = await _cropImage(image);
-      print('ImagePicker >> after crop: ' + newImagePath);
 //      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
->>>>>>> web_crop
     } else {
       print('No image selected.');
     }
     print('_getImage >> _image!.path: ' + _image!.path.toString());
     print('_getImage >> newImagePath: ' + newImagePath);
-//    _loginUserCtrl.changeNewPhotoURL(_image!.path);
-    _loginUserCtrl.changeNewPhotoURL(newImagePath);
+    if(_loginUserCtrl.isMobile) {
+      _loginUserCtrl.changeNewPhotoURL(newImagePath);
+    } else {
+      _loginUserCtrl.changeNewPhotoURL(_image!.path);
+    }
 
   }
 
@@ -217,7 +212,6 @@ class UpdateUserProfile extends StatelessWidget {
       maxWidth: 600,
     );
     if (cropped != null) {
-//      _image = XFile.fromData(File(cropped.path).readAsBytesSync());
       print('cropped >>> ' + cropped.path.toString());
       return cropped.path;
 //      setState(() {
