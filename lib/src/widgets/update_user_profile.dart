@@ -7,6 +7,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sns_login/src/controller/dropdown_button_controller.dart';
 import 'package:sns_login/src/controller/login_user_controller.dart';
+import 'package:sns_login/src/util/image_pick_crop.dart';
 import 'package:sns_login/src/widgets/common_component.dart';
 import 'package:sns_login/src/widgets/input_decoration.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -159,29 +160,35 @@ class UpdateUserProfile extends StatelessWidget {
 
 //  final _cropCtrl = CropController();
   Future _getImage() async {
-    final image = await ImagePicker().pickImage(
-      //PickedFile ==> final
-      source: ImageSource.gallery,
-      maxHeight: 800,
-    );
+//    final image = await ImagePicker().pickImage(
+//      //PickedFile ==> final
+//      source: ImageSource.gallery,
+//      maxHeight: 800,
+//    );
+//
+//    if (image != null) {
+//      _image = image;
+//      if(_loginUserCtrl.isMobile) {
+//        newImagePath = await _cropImage(image);
+//      }
+//
+////      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
+//    } else {
+//      print('No image selected.');
+//    }
 
-    if (image != null) {
-      _image = image;
-      if(_loginUserCtrl.isMobile) {
-        newImagePath = await _cropImage(image);
-      }
 
-//      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
-    } else {
-      print('No image selected.');
-    }
-    print('_getImage >> _image!.path: ' + _image!.path.toString());
-    print('_getImage >> newImagePath: ' + newImagePath);
+
     if(_loginUserCtrl.isMobile) {
+      newImagePath = await ImagePickCrop.getImage();
       _loginUserCtrl.changeNewPhotoURL(newImagePath);
     } else {
+      _image = await ImagePickCrop.getImage();
       _loginUserCtrl.changeNewPhotoURL(_image!.path);
     }
+
+    print('_getImage >> newImagePath: ' + newImagePath);
+    print('_getImage >> _image!.path: ' + _image!.path.toString());
 
   }
 
