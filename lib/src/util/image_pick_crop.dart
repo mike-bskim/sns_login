@@ -6,10 +6,6 @@ import 'package:sns_login/src/controller/login_user_controller.dart';
 
 class ImagePickCrop {
 
-  static String simpleDayFormat(DateTime time) {
-    return 'aaa';
-  }
-
   static Future getImage() async {
     final LoginUserController _loginUserCtrl = Get.put(LoginUserController());
     XFile? _image;
