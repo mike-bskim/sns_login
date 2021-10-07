@@ -160,25 +160,6 @@ class UpdateUserProfile extends StatelessWidget {
 
 //  final _cropCtrl = CropController();
   Future _getImage() async {
-//    final image = await ImagePicker().pickImage(
-//      //PickedFile ==> final
-//      source: ImageSource.gallery,
-//      maxHeight: 800,
-//    );
-//
-//    if (image != null) {
-//      _image = image;
-//      if(_loginUserCtrl.isMobile) {
-//        newImagePath = await _cropImage(image);
-//      }
-//
-////      final result1 = await Get.to(()=> ImageCrop(imageFrom: _image!.path));
-//    } else {
-//      print('No image selected.');
-//    }
-
-
-
     if(_loginUserCtrl.isMobile) {
       newImagePath = await ImagePickCrop.getImage();
       _loginUserCtrl.changeNewPhotoURL(newImagePath);
@@ -192,40 +173,6 @@ class UpdateUserProfile extends StatelessWidget {
 
   }
 
-
-// D:\workspace\Flutter\flutter_firebase\android\app\src\main\AndroidManifest.xml
-/*
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-*/
-  Future _cropImage(XFile? picked) async {
-    var cropped = await ImageCropper.cropImage(
-      androidUiSettings: AndroidUiSettings(
-        statusBarColor: Colors.red,
-        toolbarColor: Colors.red,
-        toolbarTitle: "Crop Image",
-        toolbarWidgetColor: Colors.white,
-//        lockAspectRatio: false,// no use
-      ),
-      sourcePath: picked!.path,
-      aspectRatioPresets: [
-//        CropAspectRatioPreset.original,// no use
-//        CropAspectRatioPreset.square,// no use
-//        CropAspectRatioPreset.ratio16x9,// no use
-        CropAspectRatioPreset.ratio4x3,
-      ],
-      maxWidth: 600,
-    );
-    if (cropped != null) {
-      print('cropped >>> ' + cropped.path.toString());
-      return cropped.path;
-//      setState(() {
-//      });
-    }
-  }
-
   Future _uploadImage() async {
 
     final changedName = _loginUserCtrl.curUser.displayName != _displayNameTextCtrl.text;
@@ -236,42 +183,46 @@ class UpdateUserProfile extends StatelessWidget {
     final changedPhotoURL = _loginUserCtrl.curUser.photoURL != _loginUserCtrl.newPhotoURL;
     final userNeedUpdate = changedName || changedUserType || changedLanguage || changedPhotoURL;
 
-    var _picName = 'profile_pic_${DateTime.now().millisecondsSinceEpoch}.png';
+//    var _picName = 'profile_pic_${DateTime.now().millisecondsSinceEpoch}.png';
+    var _picName = 'profile_pic.png';
 
     print('_uploadImage0');
     final firebaseStorageRef = FirebaseStorage.instance;
 
-    var task;
-    if(_loginUserCtrl.isMobile) {
-      task = await firebaseStorageRef
-          .ref() // 시작점
-          .child(_loginUserCtrl.curUser.uid!) // 경로, post
-          .child('user_info') // 경로
-          .child(_picName)
-          .putFile(File(newImagePath)); // ^7.0.0
-    } else {
-      task = await firebaseStorageRef
-          .ref() // 시작점
-          .child(_loginUserCtrl.curUser.uid!) // 경로, post
-          .child('user_info') // 경로
-          .child(_picName)
-          .putData(await _image!.readAsBytes());
+    if (changedPhotoURL) {
+      var task;
+      if(_loginUserCtrl.isMobile) {
+        task = await firebaseStorageRef
+            .ref() // 시작점
+            .child(_loginUserCtrl.curUser.uid!) // 경로, post
+            .child('user_info') // 경로
+            .child(_picName)
+            .putFile(File(newImagePath)); // ^7.0.0
+      } else {
+        task = await firebaseStorageRef
+            .ref() // 시작점
+            .child(_loginUserCtrl.curUser.uid!) // 경로, post
+            .child('user_info') // 경로
+            .child(_picName)
+            .putData(await _image!.readAsBytes());
+      }
+
+      // 업로드 완료되면 데이터의 주소를 얻을수 있음, future object
+      var downloadUrl = await task.ref.getDownloadURL();
+      print(downloadUrl);
+
+      // old 파일을 삭제하기 위한 주소 획득
+      print('_uploadImage1');
+//    final ref = FirebaseStorage.instance.refFromURL(_loginUserCtrl.curUser.photoURL!) ?? null;
+      print('_uploadImage2');
+      // 둘다 변경해야 NetworkImage 가 실행됨. 한쪽만 변경하면 FileImage 에서 오류 발생.
+      _loginUserCtrl.curUser.photoURL = downloadUrl;
+      _loginUserCtrl.changeNewPhotoURL(downloadUrl);
     }
 
-    // 업로드 완료되면 데이터의 주소를 얻을수 있음, future object
-    var downloadUrl = await task.ref.getDownloadURL();
-    print(downloadUrl);
-
-    // old 파일을 삭제하기 위한 주소 획득
-    print('_uploadImage1');
-//    final ref = FirebaseStorage.instance.refFromURL(_loginUserCtrl.curUser.photoURL!) ?? null;
-    print('_uploadImage2');
-    // 둘다 변경해야 NetworkImage 가 실행됨. 한쪽만 변경하면 FileImage 에서 오류 발생.
-    _loginUserCtrl.curUser.photoURL = downloadUrl;
-    _loginUserCtrl.changeNewPhotoURL(downloadUrl);
 
     if (userNeedUpdate) {
-      print('Updating...');
+      print('Updating...DB');
       await _loginUserCtrl.updateUserInfo(
         displayName: _displayNameTextCtrl.text,
         language: _dropdownButtonCtrl.selectedLangTypeForDB,
@@ -288,41 +239,5 @@ class UpdateUserProfile extends StatelessWidget {
 
     }
   }
-
-  imagePickerWeb() async {
-//    final imageWeb = await ImagePickerWeb.getImageInfo.then((MediaInfo mediaInfo) {
-//      uploadFileWeb(mediaInfo, _loginUserCtrl.curUser.uid!, mediaInfo.fileName!);
-//    });
-
-//    final imageWeb = await ImagePickerWeb.getImageInfo;
-//    _memoryImage = imageWeb.data;
-//    _loginUserCtrl.changeNewPhotoURL('aaa');
-
-  }
-
-//Getting Downloaded URI directly
-//  uploadFileWeb(MediaInfo mediaInfo, String ref, String fileName) {
-//    try {
-//      String? mimeType = mime(basename(mediaInfo.fileName!));
-//      var metaData = fb.UploadMetadata(contentType: mimeType);
-//      fb.StorageReference storageReference = fb.storage().ref(ref).child('user_info').child(fileName);
-//
-//      fb.UploadTask uploadTask = storageReference.put(mediaInfo.data, metaData);
-//      var imageUri;
-//      uploadTask.future.then((snapshot) => {
-//        Future.delayed(Duration(seconds: 1)).then((value) => {
-//          snapshot.ref.getDownloadURL().then((dynamic uri) {
-//            imageUri = uri;
-//            print('Download URL: ${imageUri.toString()}');
-//          })
-//        })
-//      });
-//
-//
-//    } catch (e) {
-//      print('File Upload Error: $e');
-//    }
-//  }
-
 
 }
